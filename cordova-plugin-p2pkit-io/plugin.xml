@@ -1,0 +1,71 @@
+<!--/**
+* Copyright (c) 2017 by Uepaa AG, Zürich, Switzerland.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*   http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*
+*/-->
+
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android" id="cordova-plugin-p2pkit-io" version="0.0.1">
+  <name>p2pkit</name>
+  <description>p2pkit is a proximity framework for iOS and Android</description>
+  <js-module name="p2pkit" src="www/ppk.js">
+    <clobbers target="cordova.plugins.p2pkit" />
+  </js-module>
+
+  <platform name="android">
+    <config-file target="config.xml" parent="/*">
+    <feature name="p2pkit">
+      <param name="android-package" value="ch.uepaa.p2pkit.P2PKitCordovaBridge"/>
+    </feature>
+    </config-file>
+    <source-file src="src/android/P2PKitCordovaBridge.java" target-dir="src/org/apache/cordova/plugin" />
+    <config-file target="AndroidManifest.xml" parent="/*">
+      <uses-permission android:name="android.permission.INTERNET" />
+      <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+      <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+      <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+      <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+      <uses-permission android:name="android.permission.BLUETOOTH" />
+      <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+      <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    </config-file>
+    <framework src="ch.uepaa.p2p:p2pkit-android:2.0.4" />
+    <framework src="src/android/plugin.gradle" custom="true" type="gradleReference"/>
+  </platform>
+
+  <platform name="ios">
+    <config-file parent="/*" target="config.xml">
+      <feature name="p2pkit">
+        <param name="ios-package" value="PPKCordovaBridge" />
+      </feature>
+    </config-file>
+    <config-file target="*-Info.plist" parent="UIBackgroundModes">
+      <array>
+        <string>bluetooth-central</string>
+        <string>bluetooth-peripheral</string>
+      </array>
+    </config-file>
+    <preference name="BLE_USAGE_DESCRIPTION" default="This app uses bluetooth to discover and be discovered by users nearby" />
+    <config-file target="*-Info.plist" parent="NSBluetoothPeripheralUsageDescription">
+      <string>$BLE_USAGE_DESCRIPTION</string>
+    </config-file>
+    <source-file src="src/ios/PPKCordovaBridge.m" />
+    <framework src="lib/ios/P2PKit.framework" custom="true"/>
+    <framework src="CoreBluetooth.framework"/>
+    <framework src="CFNetwork.framework"/>
+    <framework src="Security.framework"/>
+    <framework src="Foundation.framework"/>
+    <framework src="libicucore.tbd"/>
+  </platform>
+</plugin>

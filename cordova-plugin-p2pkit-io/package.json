@@ -1,0 +1,25 @@
+{
+  "name": "cordova-plugin-p2pkit-io",
+  "version": "0.0.1",
+  "description": "p2pkit is a proximity framework for iOS and Android",
+  "cordova": {
+    "id": "cordova-plugin-p2pkit-io",
+    "platforms": [
+      "ios",
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Uepaa-AG/p2pkit-cordova.git"
+  },
+  "keywords": [
+    "p2pkit","proximity", "bluetooth", "discovery", "p2p"
+  ],
+  "author": "Uepaa AG",
+  "license": "Apache 2",
+  "bugs": {
+    "url": "https://github.com/Uepaa-AG/p2pkit-cordova/issues"
+  },
+  "homepage": "http://www.p2pkit.io"
+}

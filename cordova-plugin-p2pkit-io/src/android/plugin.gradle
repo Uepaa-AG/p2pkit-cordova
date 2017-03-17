@@ -1,0 +1,10 @@
+repositories {
+	maven {
+		url 'http://p2pkit.io/maven2'
+	}
+}
+
+dependencies {
+	compile 'com.android.support:support-v4:25.1.1'
+	compile 'ch.uepaa.p2p:p2pkit-android:2.0.4'
+}
