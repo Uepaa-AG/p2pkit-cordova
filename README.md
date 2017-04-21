@@ -38,7 +38,7 @@ Here is an example app class extension that implements p2pkit functionality begi
         onEnabled: function() {
             console.log('p2pkit is enabled')
             cordova.plugins.p2pkit.enableProximityRanging()
-            cordova.plugins.p2pkit.startDiscovery('') // base64 encoded Data (bytes)
+            cordova.plugins.p2pkit.startDiscovery('', cordova.plugins.p2pkit.HIGH_PERFORMANCE) // base64 encoded Data (bytes)
         },
 
         onDisabled: function() {
@@ -48,9 +48,13 @@ Here is an example app class extension that implements p2pkit functionality begi
         onError: function(errorObject) {
             console.log('p2pkit failed to enable on platform ' + errorObject.platform + ' with error code ' + errorObject.errorCode)
         },
+        
+        onException: function(exception) {
+          console.log('p2pkit crashed with exception ' +exception.exception)
+      	},
 
         onDiscoveryStateChanged: function(discoveryStateObject) {
-            console.log('discovery state updated on platform ' + discoveryStateObject.platform + ' with error code ' + discoveryStateObject.state)
+            console.log('discovery state updated on platform ' + discoveryStateObject.platform + ' with state ' + discoveryStateObject.state)
         },
 
         onPeerDiscovered: function(peer) {
@@ -71,6 +75,10 @@ Here is an example app class extension that implements p2pkit functionality begi
 
         onGetMyPeerId: function(reply) {
             console.log(reply.myPeerId)
+        },
+
+        onGetDiscoveryPowerMode: function(reply) {
+            console.log(reply.discoveryPowerMode);
         }
     },
 
