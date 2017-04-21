@@ -57,7 +57,6 @@
 
 -(void)getMyPeerId:(CDVInvokedUrlCommand*)command  {
 
-
     dispatch_async(dispatch_get_main_queue(), ^{
 
         if (![PPKController isEnabled]) {
@@ -157,6 +156,26 @@
     });
 }
 
+-(void)setDiscoveryPowerMode:(CDVInvokedUrlCommand*)command  {
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self invokePluginResultErrorWithString:@"Power modes are not available on iOS"];
+    });
+}
+
+-(void)getDiscoveryPowerMode:(CDVInvokedUrlCommand*)command  {
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+
+        if (![PPKController isEnabled]) {
+            [self invokePluginResultErrorWithString:@"p2pkit is not enabled"];
+            return;
+        }
+
+        [self invokePluginResultSuccessWithMethodName:@"onGetDiscoveryPowerMode" parms:@{@"discoveryPowerMode":@"NOT_AVAILABLE_ON_IOS"}];
+    });
+}
+
 #pragma mark - PPKControllerDelegate
 
 -(void)PPKControllerInitialized {
@@ -221,7 +240,9 @@
 -(void)invokePluginResult:(CDVPluginResult *)result {
 
     if (!cordovaCallbackHandlerId_) {
-        [PPKController disable];
+        if ([PPKController isEnabled]) {
+            [PPKController disable];
+        }
         return;
     }
 

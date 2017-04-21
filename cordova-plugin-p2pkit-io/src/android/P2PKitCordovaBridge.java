@@ -1,6 +1,7 @@
 package ch.uepaa.p2pkit;
 
 import android.util.Base64;
+import android.util.Log;
 
 import ch.uepaa.p2pkit.discovery.*;
 import ch.uepaa.p2pkit.discovery.Peer;
@@ -27,7 +28,7 @@ public class P2PKitCordovaBridge extends CordovaPlugin {
             return false;
         }
 
-        if (cordovaCallbackContext == null) {
+        if (cordovaCallbackContext == null && "enableP2PKit".equals(action)) {
             cordovaCallbackContext = callbackContext;
         }
 
@@ -49,7 +50,8 @@ public class P2PKitCordovaBridge extends CordovaPlugin {
 
         if ("startDiscovery".equals(action)) {
             String discoveryInfo = args.getString(0);
-            startDiscovery(discoveryInfo);
+            String discoveryPowerMode = args.getString(1);
+            startDiscovery(discoveryInfo, discoveryPowerMode);
             return true;
         }
 
@@ -67,6 +69,17 @@ public class P2PKitCordovaBridge extends CordovaPlugin {
             String discoveryInfo = args.getString(0);
             pushNewDiscoveryInfo(discoveryInfo);
             return true;
+        }
+        
+        if ("getDiscoveryPowerMode".equals(action)) {
+        	getDiscoveryPowerMode();
+        	return true;
+        }
+        
+        if ("setDiscoveryPowerMode".equals(action)) {
+        	String discoveryPowerMode = args.getString(0);
+        	setDiscoveryPowerMode(discoveryPowerMode);
+        	return true;
         }
 
         return false;
@@ -101,7 +114,7 @@ public class P2PKitCordovaBridge extends CordovaPlugin {
         }
     }
 
-    private void startDiscovery(String discoveryInfoBase64String) {
+    private void startDiscovery(String discoveryInfoBase64String, String discoveryPowerMode) {
 
         if (!P2PKit.isEnabled()) {
             invokePluginResultError("p2pkit is not enabled");
@@ -113,9 +126,15 @@ public class P2PKitCordovaBridge extends CordovaPlugin {
         if (discoveryInfoBase64String != null) {
             discoveryInfo = Base64.decode(discoveryInfoBase64String,Base64.DEFAULT);
         }
+        
+        DiscoveryPowerMode powerModeToUse = DiscoveryPowerMode.HIGH_PERFORMANCE;
+        
+        if ("LOW_POWER".equals(discoveryPowerMode)) {
+        	powerModeToUse = DiscoveryPowerMode.LOW_POWER;
+        }
 
         try {
-            P2PKit.startDiscovery(discoveryInfo, mDiscoveryListener);
+            P2PKit.startDiscovery(discoveryInfo, powerModeToUse, mDiscoveryListener);
         } catch (DiscoveryInfoTooLongException e) {
             invokePluginResultError("Failed to start discovery with exception " +e.toString());
         }
@@ -168,6 +187,36 @@ public class P2PKitCordovaBridge extends CordovaPlugin {
             invokePluginResultError("Failed to update discovery info with exception " +e.toString());
         }
 
+    }
+    
+    private void getDiscoveryPowerMode() {
+
+        if (!P2PKit.isEnabled()) {
+            invokePluginResultError("p2pkit is not enabled");
+            return;
+        }
+        
+        try {
+        	invokePluginResultSuccess("onGetDiscoveryPowerMode", new JSONObject().put("discoveryPowerMode", P2PKit.getDiscoveryPowerMode()));
+        } catch (JSONException e) {
+        	invokePluginResultError("Failed to get the current DiscoveryPowerMode with exception " +e.toString());
+        }
+    }
+    
+    private void setDiscoveryPowerMode(String discoveryPowerMode) {
+    	
+    	if (!P2PKit.isEnabled()) {
+            invokePluginResultError("p2pkit is not enabled");
+            return;
+        }
+        
+        DiscoveryPowerMode powerModeToSet = DiscoveryPowerMode.HIGH_PERFORMANCE;
+        
+        if ("LOW_POWER".equals(discoveryPowerMode)) {
+        	powerModeToSet = DiscoveryPowerMode.LOW_POWER;
+        }
+        
+        P2PKit.setDiscoveryPowerMode(powerModeToSet);
     }
 
     private final DiscoveryListener mDiscoveryListener = new DiscoveryListener() {
@@ -244,6 +293,15 @@ public class P2PKitCordovaBridge extends CordovaPlugin {
             } catch (JSONException e) {
                 invokePluginResultError("Failed to create json result with exception " +e.toString());
             }
+        }
+        
+        @Override
+        public void onException(Throwable throwable) {
+        	try {
+        		invokePluginResultSuccess("onException", new JSONObject().put("platform", "android").put("exception", ""+Log.getStackTraceString(throwable)));
+        	} catch (JSONException e) {
+        		invokePluginResultError("Failed to create json result with exception " +e.toString());
+        	}
         }
     };
 

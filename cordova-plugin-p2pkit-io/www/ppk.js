@@ -41,8 +41,8 @@ exports.getMyPeerId = function(myPeerId){
     exec(null, null, 'p2pkit', 'getMyPeerId', null);
 };
 
-exports.startDiscovery = function(discoveryInfo){
-    exec(null, null, 'p2pkit', 'startDiscovery', [discoveryInfo]);
+exports.startDiscovery = function(discoveryInfo, discoveryPowerMode){
+    exec(null, null, 'p2pkit', 'startDiscovery', [discoveryInfo, discoveryPowerMode]);
 };
 
 exports.stopDiscovery = function(){
@@ -56,3 +56,14 @@ exports.enableProximityRanging = function(){
 exports.pushNewDiscoveryInfo = function(discoveryInfo){
     exec(null, null, 'p2pkit', 'pushNewDiscoveryInfo', [discoveryInfo]);
 };
+
+exports.getDiscoveryPowerMode = function(){
+	exec(null, null, 'p2pkit', 'getDiscoveryPowerMode');
+};
+
+exports.setDiscoveryPowerMode = function(discoveryPowerMode){
+	exec(null, null, 'p2pkit', 'setDiscoveryPowerMode', [discoveryPowerMode]);
+};
+
+exports.HIGH_PERFORMANCE = 'HIGH_PERFORMANCE';
+exports.LOW_POWER = 'LOW_POWER';
