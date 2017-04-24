@@ -127,16 +127,16 @@ public class P2PKitCordovaBridge extends CordovaPlugin {
             discoveryInfo = Base64.decode(discoveryInfoBase64String,Base64.DEFAULT);
         }
         
-        DiscoveryPowerMode powerModeToUse = DiscoveryPowerMode.HIGH_PERFORMANCE;
-        
-        if ("LOW_POWER".equals(discoveryPowerMode)) {
-        	powerModeToUse = DiscoveryPowerMode.LOW_POWER;
-        }
+        DiscoveryPowerMode powerModeToUse = getDiscoveryPowerModeFromString(discoveryPowerMode);
+        if (powerModeToUse == null) {
+        	invokePluginResultError("Unknown DiscoveryPowerMode: " + discoveryPowerMode);
+        } else {
 
-        try {
-            P2PKit.startDiscovery(discoveryInfo, powerModeToUse, mDiscoveryListener);
-        } catch (DiscoveryInfoTooLongException e) {
-            invokePluginResultError("Failed to start discovery with exception " +e.toString());
+        	try {
+            	P2PKit.startDiscovery(discoveryInfo, powerModeToUse, mDiscoveryListener);
+        	} catch (DiscoveryInfoTooLongException e) {
+            	invokePluginResultError("Failed to start discovery with exception " +e.toString());
+        	}
         }
     }
 
@@ -210,13 +210,13 @@ public class P2PKitCordovaBridge extends CordovaPlugin {
             return;
         }
         
-        DiscoveryPowerMode powerModeToSet = DiscoveryPowerMode.HIGH_PERFORMANCE;
+        DiscoveryPowerMode powerModeToSet = getDiscoveryPowerModeFromString(discoveryPowerMode);
         
-        if ("LOW_POWER".equals(discoveryPowerMode)) {
-        	powerModeToSet = DiscoveryPowerMode.LOW_POWER;
+        if (powerModeToSet == null) {
+        	invokePluginResultError("Unknown DiscoveryPowerMode: " + discoveryPowerMode);
+        } else {
+        	P2PKit.setDiscoveryPowerMode(powerModeToSet);
         }
-        
-        P2PKit.setDiscoveryPowerMode(powerModeToSet);
     }
 
     private final DiscoveryListener mDiscoveryListener = new DiscoveryListener() {
@@ -363,5 +363,16 @@ public class P2PKitCordovaBridge extends CordovaPlugin {
         jsonPeer.put("proximityStrength",proximityStrength);
 
         return jsonPeer;
+    }
+    
+    private DiscoveryPowerMode getDiscoveryPowerModeFromString(String discoveryPowerMode) {
+    
+    	if (DiscoveryPowerMode.LOW_POWER.name().equals(discoveryPowerMode)) {
+    		return DiscoveryPowerMode.LOW_POWER;
+    	} else if (DiscoveryPowerMode.HIGH_PERFORMANCE.name().equals(discoveryPowerMode)) {
+    		return DiscoveryPowerMode.HIGH_PERFORMANCE;
+    	} else {
+    		return null;
+    	}
     }
 }
